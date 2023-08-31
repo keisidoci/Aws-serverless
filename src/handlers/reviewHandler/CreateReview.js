@@ -9,7 +9,7 @@ module.exports.handler = async (event, context) => {
       await connectDatabase()
       const requestBody = JSON.parse(event.body)
       const { rating, productId } = requestBody
-      
+      console.log({rating, productId})
       if (rating < 1 || rating > 5) {
        return{
         statusCode: 400,
@@ -20,7 +20,7 @@ module.exports.handler = async (event, context) => {
       }
       const review = await Review.create({ rating })
       const product = await Product.findById(productId);
-  
+      console.log(product,review)
       if (!product) {
         return{
           statusCode: 404,
