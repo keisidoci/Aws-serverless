@@ -12,6 +12,43 @@ plugins:
   - serverless-dotenv-plugin
   - serverless-webpack
 
+resources:
+  Resources:
+    UserPool:
+      Type: AWS::Cognito::UserPool
+      Properties:
+        UserPoolName: Taleas_users
+        Schema:
+            - Name: name
+              AttributeDataType: String
+              Mutable: true
+              Required: true
+            - Name: family_name
+              AttributeDataType: String
+              Mutable: true
+              Required: true
+            - Name: email
+              AttributeDataType: String
+              Mutable: true
+              Required: true
+        Policies:
+          PasswordPolicy:
+            MinimumLength: 8
+            RequireUppercase: true
+            RequireLowercase: true
+            RequireNumbers: true
+            RequireSymbols: true
+    UserClient:
+      Type: AWS::Cognito::UserPoolClient
+      Properties:
+        ClientName: FindApp
+        GenerateSecret: false
+        UserPoolId:
+          Ref: UserPool
+
+    
+
+
 package:
   individually: true
   excludeDevDependencies: false
@@ -194,3 +231,45 @@ functions:
           path: /productcategory/{id}
           method: delete
           cors: true
+
+# Users
+
+  createUser:
+    handler: src/handlers/userHandler/CreateUser.handler
+    events:
+      - http:
+          path: /user
+          method: post
+          cors: true  
+
+  deleteUser:
+    handler: src/handlers/userHandler/DeleteUser.handler
+    events:
+      - http:
+          path: /user/{id}
+          method: delete
+          cors: true  
+
+  getUsers:
+    handler: src/handlers/userHandler/GetUsers.handler
+    events:
+      - http:
+          path: /users
+          method: get
+          cors: true  
+
+  getUserId:
+    handler: src/handlers/userHandler/GetUserId.handler
+    events:
+      - http:
+          path: /user/{id}
+          method: get
+          cors: true  
+
+  updateUser:
+    handler: src/handlers/userHandler/UpdateUser.handler
+    events:
+      - http:
+          path: /user/{id}
+          method: put
+          cors: true  
