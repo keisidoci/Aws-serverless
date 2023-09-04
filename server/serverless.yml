@@ -1,0 +1,317 @@
+service: taleas-dev
+
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  environment:
+    NODE_OPTIONS: "--max-old-space-size=8192"
+    user_pool_id: { Ref: UserPool }
+    client_id: { Ref: UserClient }
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - cognito-idp:AdminInitiateAuth
+            - cognito-idp:AdminCreateUser
+            - cognito-idp:AdminSetUserPassword
+          Resource: "*"
+  stage: dev
+  region: eu-central-1
+
+plugins:
+  - serverless-dotenv-plugin
+  - serverless-webpack
+
+package:
+  individually: true
+  excludeDevDependencies: false
+
+functions:
+
+#Products
+
+  createProduct:
+    handler: src/handlers/productsHandler/CreateProduct.handler
+    events:
+      - http:
+          path: /product
+          method: post
+          cors: true
+
+  getProducts:
+    handler: src/handlers/productsHandler/GetProducts.handler
+    events:
+      - http:
+          path: /allproduct
+          method: get
+          cors: true
+  
+  getProductId:
+    handler: src/handlers/productsHandler/GetProductId.handler
+    events:
+      - http:
+          path: /product/{id}
+          method: get
+          cors: true
+
+  updateProduct:
+    handler: src/handlers/productsHandler/UpdateProduct.handler
+    events:
+      - http:
+          path: /product/{id}
+          method: put
+          cors: true
+
+  deleteProduct:
+    handler: src/handlers/productsHandler/DeleteProduct.handler
+    events:
+      - http:
+          path: /product/{id}
+          method: delete
+          cors: true
+
+  productPages:
+    handler: src/handlers/productsHandler/ProductPages.handler
+    events:
+      - http:
+          path: /product
+          method: get
+          cors: true
+
+#Category
+
+  getCategory:
+    handler: src/handlers/categoryHandler/GetCategory.handler
+    events:
+      - http:
+          path: /allcategories
+          method: get
+          cors: true
+
+  createCategory:
+    handler: src/handlers/categoryHandler/CreateCategory.handler
+    events:
+      - http:
+          path: /categories
+          method: post
+          cors: true
+
+  getCategoryId:
+    handler: src/handlers/categoryHandler/GetCategoryId.handler
+    events:
+      - http:
+          path: /categories/{id}
+          method: get
+          cors: true
+
+  updateCategory:
+    handler: src/handlers/categoryHandler/UpdateCategory.handler
+    events:
+      - http:
+          path: /categories/{id}
+          method: put
+          cors: true
+
+  deleteCategory:
+    handler: src/handlers/categoryHandler/DeleteCategory.handler
+    events:
+      - http:
+          path: /categories/{id}
+          method: delete
+          cors: true
+
+# Reviews
+
+  getReview:
+    handler: src/handlers/reviewHandler/GetReview.handler
+    events:
+      - http:
+          path: /allreview
+          method: get
+          cors: true
+
+  getReviewId:
+    handler: src/handlers/reviewHandler/GetReviewId.handler
+    events:
+      - http:
+          path: /review/{id}
+          method: get
+          cors: true
+
+  createReview:
+    handler: src/handlers/reviewHandler/CreateReview.handler
+    events:
+      - http:
+          path: /review
+          method: post
+          cors: true
+
+  updateReview:
+    handler: src/handlers/reviewHandler/UpdateReview.handler
+    events:
+      - http:
+          path: /review/{id}
+          method: put
+          cors: true
+
+  deleteReview:
+    handler: src/handlers/reviewHandler/DeleteReview.handler
+    events:
+      - http:
+          path: /review/{id}
+          method: delete
+          cors: true
+
+# ProductCategory
+
+  createProductCategory:
+    handler: src/handlers/productCategoryHandler/CreateProductCategory.handler
+    events:
+      - http:
+          path: /productcategory
+          method: post
+          cors: true
+ 
+  getProductCategory:
+    handler: src/handlers/productCategoryHandler/GetProductCategory.handler
+    events:
+      - http:
+          path: /allproductcategory
+          method: get
+          cors: true
+          
+  
+  getProductCategoryId:
+    handler: src/handlers/productCategoryHandler/GetProductCategoryId.handler
+    events:
+      - http:
+          path: /productcategory/{id}
+          method: get
+          cors: true
+
+  updateProductCategory:
+    handler: src/handlers/productCategoryHandler/UpdateProductCategory.handler
+    events:
+      - http:
+          path: /productcategory/{id}
+          method: put
+          cors: true
+
+  deleteProductCategory:
+    handler: src/handlers/productCategoryHandler/DeleteProductCategory.handler
+    events:
+      - http:
+          path: /productcategory/{id}
+          method: delete
+          cors: true
+
+# Users
+
+  signUpUser:
+    handler: src/handlers/userHandler/SignUpUser.handler
+    events:
+      - http:
+          path: /user/signup
+          method: post
+          cors: true  
+  
+  logInUser:
+    handler: src/handlers/userHandler/LogInUser.handler
+    events:
+      - http:
+          path: /user/login
+          method: post
+          cors: true
+
+  privateAPI:
+    handler: src/handlers/userHandler/Private.handler
+    events:
+      - http:
+          path: user/private
+          method: post
+          cors: true
+          authorizer:
+            name: PrivateAuthorizer
+            type: COGNITO_USER_POOLS
+            arn:
+              Fn::GetAtt:
+                - UserPool
+                - Arn
+            claims:
+              - email
+
+  deleteUser:
+    handler: src/handlers/userHandler/DeleteUser.handler
+    events:
+      - http:
+          path: /user/{id}
+          method: delete
+          cors: true  
+
+  getUsers:
+    handler: src/handlers/userHandler/GetUsers.handler
+    events:
+      - http:
+          path: /users
+          method: get
+          cors: true  
+
+  getUserId:
+    handler: src/handlers/userHandler/GetUserId.handler
+    events:
+      - http:
+          path: /user/{id}
+          method: get
+          cors: true  
+
+  updateUser:
+    handler: src/handlers/userHandler/UpdateUser.handler
+    events:
+      - http:
+          path: /user/{id}
+          method: put
+          cors: true 
+
+
+
+resources:
+  Resources:
+    UserPool:
+      Type: AWS::Cognito::UserPool
+      Properties:
+        UserPoolName: Taleas_users
+        Schema:
+            - Name: name
+              AttributeDataType: String
+              Mutable: true
+              Required: true
+            - Name: family_name
+              AttributeDataType: String
+              Mutable: true
+              Required: true
+            - Name: email
+              AttributeDataType: String
+              Mutable: true
+              Required: true
+        Policies:
+          PasswordPolicy:
+            MinimumLength: 8
+            RequireUppercase: true
+            RequireLowercase: true
+            RequireNumbers: true
+            RequireSymbols: true
+    UserClient:
+      Type: AWS::Cognito::UserPoolClient
+      Properties:
+        ClientName: FindApp
+        GenerateSecret: false
+        UserPoolId: { Ref: UserPool }
+        AccessTokenValidity: 5
+        IdTokenValidity: 5
+        ExplicitAuthFlows:
+          - "ADMIN_NO_SRP_AUTH"
+    
+          
