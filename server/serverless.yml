@@ -7,17 +7,6 @@ provider:
   runtime: nodejs18.x
   environment:
     NODE_OPTIONS: "--max-old-space-size=8192"
-    user_pool_id: { Ref: UserPool }
-    client_id: { Ref: UserClient }
-  iam:
-    role:
-      statements:
-        - Effect: Allow
-          Action:
-            - cognito-idp:AdminInitiateAuth
-            - cognito-idp:AdminCreateUser
-            - cognito-idp:AdminSetUserPassword
-          Resource: "*"
   stage: dev
   region: eu-central-1
 
@@ -226,23 +215,6 @@ functions:
           method: post
           cors: true
 
-  privateAPI:
-    handler: src/handlers/userHandler/Private.handler
-    events:
-      - http:
-          path: user/private
-          method: post
-          cors: true
-          authorizer:
-            name: PrivateAuthorizer
-            type: COGNITO_USER_POOLS
-            arn:
-              Fn::GetAtt:
-                - UserPool
-                - Arn
-            claims:
-              - email
-
   deleteUser:
     handler: src/handlers/userHandler/DeleteUser.handler
     events:
@@ -275,43 +247,13 @@ functions:
           method: put
           cors: true 
 
+  confirm: 
+    handler: src/handlers/userHandler/Confirm.handler
+    events:
+      - http:
+          path: user/confirm
+          method: post
+          cors: true
 
 
-resources:
-  Resources:
-    UserPool:
-      Type: AWS::Cognito::UserPool
-      Properties:
-        UserPoolName: Taleas_users
-        Schema:
-            - Name: name
-              AttributeDataType: String
-              Mutable: true
-              Required: true
-            - Name: family_name
-              AttributeDataType: String
-              Mutable: true
-              Required: true
-            - Name: email
-              AttributeDataType: String
-              Mutable: true
-              Required: true
-        Policies:
-          PasswordPolicy:
-            MinimumLength: 8
-            RequireUppercase: true
-            RequireLowercase: true
-            RequireNumbers: true
-            RequireSymbols: true
-    UserClient:
-      Type: AWS::Cognito::UserPoolClient
-      Properties:
-        ClientName: FindApp
-        GenerateSecret: false
-        UserPoolId: { Ref: UserPool }
-        AccessTokenValidity: 5
-        IdTokenValidity: 5
-        ExplicitAuthFlows:
-          - "ADMIN_NO_SRP_AUTH"
-    
-          
+

@@ -1,0 +1,48 @@
+/* EntryPage.css */
+
+.entry-page {
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+    height: 100vh; 
+    background-size: cover; /* Cover the entire container with the background image */
+    background-position: center; /* Center the background image */
+    background-repeat: no-repeat;
+    /* background-color: #f0f0f0;  */
+  }
+
+
+.content {
+    color: white;
+    text-align: center;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.23);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(7.4px);
+    -webkit-backdrop-filter: blur(7.4px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+  
+  h1 {
+    font-size: 2rem;
+  }
+  
+  p {
+    font-size: 1.2rem;
+  }
+  
+  .join-now-button {
+    background-color: #2b2d2f;
+    color: white;
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  
+  .join-now-button:hover {
+    background-color: #5f748a;
+  }
+  

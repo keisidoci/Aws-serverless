@@ -1,0 +1,42 @@
+.user-dash-container{
+  padding-top: 50px;
+  /* margin-top: 50px; */
+  padding-bottom: 50px;
+  height: 100vh; 
+    background-size: cover; /* Cover the entire container with the background image */
+    background-position: center; /* Center the background image */
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+}
+
+.button{
+  background-color: black;
+  border-radius: 10px;
+  color: white;
+  width: 100px;
+  height: fit-content;
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+main{
+  color: white;
+  text-align: center;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.23);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(7.4px);
+  -webkit-backdrop-filter: blur(7.4px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+h1{
+  font-size: 24px;
+}
+.signout{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}

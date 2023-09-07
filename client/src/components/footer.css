@@ -1,0 +1,31 @@
+.footer{
+    background-color: rgb(47, 45, 45);
+}
+.home {
+    text-decoration: none;
+    text-align: center;
+    color: white;
+  }
+  #socials {
+    font-size: large;
+    text-decoration: none;
+    text-align: center;
+  } 
+  .idea {
+    margin-top: 60px;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
+  .links{
+    font-size: 16px;
+  }
+
+  @media screen and (max-width: 1024px) {
+    .content{
+  bottom: 80%;
+    }
+    .links{
+      font-size: 20px;
+    }
+  }

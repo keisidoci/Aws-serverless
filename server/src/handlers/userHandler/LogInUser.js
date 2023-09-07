@@ -1,49 +1,64 @@
 const AWS = require('aws-sdk');
 require('dotenv').config();
-const { validateInput } = require("../../functions/functions");
-
-const cognitoService = new AWS.CognitoIdentityServiceProvider();
+const cognito = new AWS.CognitoIdentityServiceProvider()
 
 module.exports.handler = async (event, context) => {
+
+  console.log(JSON.stringify(event));
+  context.callbackWaitsForEmptyEventLoop = false;
+
   try {
-    const isValid = validateInput(event.body);
-    if (!isValid) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ error: "Invalid input" }),
-      };
-    }
-
     const { email, password } = JSON.parse(event.body);
-    const { COGNITO_USER_POOL_ID, COGNITO_APP_CLIENT_ID } = process.env;
+    console.log('Email ', email )
+    console.log('Password', password);
 
-    const params = {
-      UserPoolId: COGNITO_USER_POOL_ID,
-      ClientId: COGNITO_APP_CLIENT_ID,
+    const authParams = {
+      AuthFlow: 'USER_PASSWORD_AUTH',
+      ClientId: process.env.COGNITO_APP_CLIENT_ID,
       AuthParameters: {
         USERNAME: email,
         PASSWORD: password,
       },
     };
 
-    const response = await cognitoService.adminInitiateAuth(params).promise();
+    console.log('Before Cognito authentication');
+    const authResult = await cognito.adminInitiateAuth(authParams).promise();
+    console.log('After Cognito authentication');
 
-    if (!response.AuthenticationResult || !response.AuthenticationResult.IdToken) {
-      return {
-        statusCode: 500,
-        body: JSON.stringify({ error: "Authentication failed" }),
-      };
-    }
+    const accessToken = authResult.AuthenticationResult.AccessToken;
+    const params = {
+      AccessToken: accessToken,
+  };
 
+
+  if (!authResult.AuthenticationResult || !authResult.AuthenticationResult.IdToken) {
     return {
-      statusCode: 201,
-      body: JSON.stringify({ message: 'Success', token: response.AuthenticationResult.IdToken }),
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "*",
-      },
+      statusCode: 500,
+      body: JSON.stringify({ error: "Authentication failed" }),
     };
+  }
+  
+    try{
+      const result = await cognito.getUser(params).promise();
+      return{
+          statusCode: 200,
+          headers: {
+              'Access-Control-Allow-Origin': '*',
+              'Access-Control-Allow-Credentials': true,
+            },
+          body: JSON.stringify({status: "success", result})
+      }
+  } catch (authError) {
+      console.log("Authentication error", authError);
+      return {
+        statusCode: 401,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Credentials': true,
+        },
+        body: JSON.stringify({ error: "Invalid or expired token" }),
+      };
+}
   } catch (error) {
     console.error(error); 
     return {

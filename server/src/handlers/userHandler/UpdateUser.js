@@ -1,81 +1,51 @@
-const AWS = require('aws-sdk')
+const AWS = require('aws-sdk');
 require('dotenv').config(); 
-const cognitoIdentityServiceProvider = new AWS.CognitoIdentityServiceProvider();
-
-
-exports.handler = async (event) => {
-  try {
-    const { sub } = event.requestContext.authorizer.claims;
-
-    const requestBody = JSON.parse(event.body);
-    const { name, surname, email, password } = requestBody;
-
-    const attributeUpdates = [];
-
-    if (name) {
-      attributeUpdates.push({
-        Name: 'name',
-        Value: name,
-      });
+const connectDatabase = require("../../database/dbConfig")
+const cognito = new AWS.CognitoIdentityServiceProvider({
+    apiVersion: '2016-04-18',
+    region: 'eu-central-1',
+    params: {
+      UserPoolId: process.env.COGNITO_USER_POOL_ID
     }
+  });
+const mongoose = require('mongoose');
+const User = require("../../models/userModel");
 
-    if (surname) {
-      attributeUpdates.push({
-        Name: 'family_name',
-        Value: surname,
-      });
-    }
-
-    if (email) {
-      // Check if the new email is already taken
-      const existingEmail = await cognitoIdentityServiceProvider
-        .adminGetUser({
-          UserPoolId: process.env.COGNITO_USER_POOL_ID, 
-          Username: sub, 
-        })
-        .promise();
-
-      if (existingEmail && existingEmail.UserAttributes.find((attr) => attr.Name === 'email').Value !== email) {
-        return {
-          statusCode: 400,
-          body: JSON.stringify({ error: 'Email is already in use' }),
-        };
-      }
-
-      attributeUpdates.push({
-        Name: 'email',
-        Value: email,
-      });
-    }
-
-    if (password) {
-      attributeUpdates.push({
-        Name: 'password',
-        Value: password,
-      });
-    }
-
-    await cognitoIdentityServiceProvider
-      .adminUpdateUserAttributes({
-        UserPoolId: process.env.COGNITO_USER_POOL_ID, 
-        Username: sub, 
-        UserAttributes: attributeUpdates,
-      })
-      .promise();
-
-    return {
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "*",
-      },
-      statusCode: 200,
-      body: JSON.stringify({ message: 'User updated successfully' }),
+module.exports.updateUser = async (event) => {
+    await connectDatabase();
+    
+    const {username, name, surname, email} = event;
+    const params = {
+        ClientId: process.env.COGNITO_APP_CLIENT_ID,
+        Username: email,
+        Password: password,
+        UserAttributes: [
+            {
+                Name: 'name',
+                Value: name
+            },
+            {
+              Name: 'family_name',
+              Value: surname
+           },
+            {
+                Name: 'email',
+                Value: email
+            },
+            {
+                Name: 'preferred_username',
+                Value: username
+            },
+        ]
     };
-  } catch (error) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: error.message }),
-    };
-  }
+    
+    try {
+        await cognito.adminUpdateUserAttributes(params).promise();
+        
+        await User.updateOne({username}, {$set: {name, surname, email}});
+        
+        return {success: true};
+    } catch (error) {
+        return {success: false, error: error.message};
+    }
 };
