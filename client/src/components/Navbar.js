@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Auth } from 'aws-amplify';
 import './Navbar.css';
+import LoginModal from "../components/Modals/LoginModal"
 
 function Navbar() {
+  const [showModal, setShowModal] = useState(false)
   const [click, setClick] = useState(false);
   const [button, setButton] = useState(true);
   const [authenticated, setAuthenticated] = useState(false);
@@ -67,6 +69,15 @@ function Navbar() {
       console.error('Error getting user info:', error);
     })
 
+    
+  const toDeleteProduct = () => {
+    setShowModal(true)
+  }
+
+  const onCancelDelete = () => {
+    setShowModal(false)
+  }
+
   window.addEventListener('resize', showButton);
 
   return (
@@ -85,16 +96,31 @@ function Navbar() {
                 Home
               </Link>
             </li>
-            <li className='nav-item'>
-              <Link
-                to='/product'
-                className='nav-links'
-                onClick={closeMobileMenu}
-                style={{ fontFamily: "Roboto" }}
-              >
-                Products
-              </Link>
-            </li>
+            {authenticated ? (
+              <li className='nav-item'>
+                <Link
+                  to='/product'
+                  className='nav-links'
+                  onClick={closeMobileMenu}
+                  style={{ fontFamily: "Roboto" }}
+                >
+                  Products
+                </Link>
+              </li>
+            ) : (
+              <li className='nav-item'>
+                {/* Open the modal when Products link is clicked */}
+                <button
+                  className='nav-links'
+                  onClick={() => setShowModal(true)}
+                  style={{ fontFamily: "Roboto" }}
+                >
+                  Products
+                </button>
+              </li>
+            )}
+
+           
             {authenticated ?
       (
             <li className='nav-item'>
@@ -113,6 +139,7 @@ function Navbar() {
         to='/signup'
         className='nav-links'
         onClick={closeMobileMenu}
+        style={{ fontFamily: "Roboto" }}
       >
         Join now!
       </Link>
@@ -121,6 +148,14 @@ function Navbar() {
           </ul>
         </div>
       </nav>
+      {showModal && (
+        <LoginModal
+          isOpen={showModal}
+          onCancel={() => setShowModal(false)} // Close the modal
+          onConfirm={() => { setShowModal(false); // Close the modal
+          }}
+        />
+      )}
     </>
   );
 }

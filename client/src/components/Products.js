@@ -81,17 +81,9 @@ const Products = () => {
   }
   
   const deleteProduct = async (id) => {
-    const user = await Auth.currentAuthenticatedUser()
-    const token = user.signInUserSession.idToken.jwtToken
     setShowModal(false)
     try {
-      await axios.delete(`https://b7a2r32fmk.execute-api.eu-central-1.amazonaws.com/dev/product/${id}`,
-      {
-        headers: {
-          Authorization: token,
-        },
-      }
-      )
+      await axios.delete(`https://b7a2r32fmk.execute-api.eu-central-1.amazonaws.com/dev/product/${id}`)
       toast.success("Product deleted successfully")
       loadProducts()
     } catch (error) {

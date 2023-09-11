@@ -1,14 +1,11 @@
-/* EntryPage.css */
-
 .entry-page {
     display: flex;
     justify-content: center; 
     align-items: center; 
     height: 100vh; 
-    background-size: cover; /* Cover the entire container with the background image */
-    background-position: center; /* Center the background image */
+    background-size: cover; 
+    background-position: center;
     background-repeat: no-repeat;
-    /* background-color: #f0f0f0;  */
   }
 
 
