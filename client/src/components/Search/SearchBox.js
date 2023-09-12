@@ -15,7 +15,7 @@ const SearchBox = ({ onSearch }) => {
 
   return (
     <div className="input-group">
-      <div className="form-outline" style={{"border-radius": "10em", "background": "linear-gradient(to right, #F0B6D5, #A38495);"}}>
+      <div className="form-outline">
         <input
           type="search"
           className="form-control"
