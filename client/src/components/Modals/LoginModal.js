@@ -12,7 +12,7 @@ function Modal({ isOpen, onCancel, onConfirm }) {
         <div className='title'>
             <h2>Login to access this page!</h2>
         </div>
-        <div className='footer'>
+        <div className='footer-m'>
            <Link to="/signup"><button onClick={onConfirm}>Login</button></Link>
             <button onClick={onCancel} id='cancelBtn'>Cancel</button>
         </div>

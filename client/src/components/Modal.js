@@ -14,7 +14,7 @@ function Modal({ isOpen, onCancel, onConfirm }) {
         <div className='body'>
             <p>You can't undo the action!</p>
         </div>
-        <div className='footer'>
+        <div className='footer-m'>
             <button onClick={onConfirm}>Yes</button>
             <button onClick={onCancel} id='cancelBtn'>Cancel</button>
         </div>
