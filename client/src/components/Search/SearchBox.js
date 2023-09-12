@@ -19,7 +19,7 @@ const SearchBox = ({ onSearch }) => {
         <input
           type="search"
           className="form-control"
-          placeholder="Search"
+          placeholder="Search for product"
           value={searchTerm}
           onChange={handleInputChange}
         />
