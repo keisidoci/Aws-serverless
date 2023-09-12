@@ -8,6 +8,7 @@ import Modal from "./Modal"
 import Star from "./Star"
 import "./Product.css"
 import ReactPaginate from "react-paginate"
+import SearchBox from "./Search/SearchBox"
 
 const Products = () => {
   const [showModal, setShowModal] = useState(false)
@@ -100,6 +101,7 @@ const Products = () => {
         <Link className="btn btn-dark add" to="/add">
           Add product
         </Link>
+        
       </div>
       <table className="table border shadow costum">
         <thead className="thead-dark">

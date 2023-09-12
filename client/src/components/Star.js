@@ -28,7 +28,7 @@ const Star = ({ productId }) => {
   };
 
   const getLabel = () => {
-    if (rating === 0) return "No Rating";
+    if (rating === 0) return "";
     return labels[rating - 1];
   };
 
@@ -39,7 +39,7 @@ const Star = ({ productId }) => {
       ) : (
         <form>
           <div className='row1'>
-            <p>{getLabel()}</p>
+            <p style={{"fontSize": "16px"}}>{getLabel()}</p>
             {[...Array(5)].map((star, index) => {
               index += 1;
               return (
